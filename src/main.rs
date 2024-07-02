@@ -1,5 +1,8 @@
-use clap::Parser;
-use std::{fs, io};
+use clap::{Parser};
+use std::{
+    fs,
+    io::{self, prelude::*, BufReader},
+};
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
@@ -13,12 +16,11 @@ fn main() {
     match io.files {
         Some(files) => {
             for f in files {
-                let out = match fs::read_to_string(&f) {
-                    Ok(str) => str,
-                    Err(error) => panic!("{}", error),
-                };
-
-                print!("{}", out);
+                let file = fs::File::open(f).unwrap();
+                let reader = BufReader::new(file);
+                for line in reader.lines() {
+                    println!("{}", line.unwrap());
+                }
             }
         }
         None => loop {
